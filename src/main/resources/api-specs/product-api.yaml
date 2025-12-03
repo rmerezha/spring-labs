@@ -1,0 +1,299 @@
+openapi: 3.0.3
+info:
+  title: Cosmo Cats Product API
+  description: API for managing intergalactic products (anti-gravity yarn, cosmic milk, etc.).
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Local Development Server
+
+tags:
+  - name: Products
+    description: Operations related to marketplace products
+
+paths:
+  /api/v1/products:
+    get:
+      summary: Get all products
+      description: Returns a list of all available cosmic products.
+      tags:
+        - Products
+      responses:
+        '200':
+          description: List retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductListDto'
+        '500':
+          description: Internal server error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+    post:
+      summary: Create a new product
+      description: Adds a new product to the catalog.
+      tags:
+        - Products
+      requestBody:
+        description: Data for the new product
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductDto'
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDetailsDto'
+        '400':
+          description: Input validation error
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '409':
+          description: Conflict. Product with this name already exists
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+  /api/v1/products/{id}:
+    get:
+      summary: Get product by ID
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: Unique identifier of the product
+      responses:
+        '200':
+          description: Product found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDetailsDto'
+        '404':
+          description: Product not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+    put:
+      summary: Update existing product
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: ID of the product to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductDto'
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDetailsDto'
+        '400':
+          description: Invalid input data
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '404':
+          description: Product not found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+
+    delete:
+      summary: Delete product
+      description: Deletes a product if it exists. Returns success even if the product was already deleted (Idempotent).
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: ID of the product to delete
+      responses:
+        '204':
+          description: Product deleted successfully or did not exist (No Content)
+
+components:
+  schemas:
+    ProductDetailsDto:
+      type: object
+      required:
+        - id
+        - name
+        - price
+        - stockQuantity
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Unique identifier
+          example: 101
+        name:
+          type: string
+          description: Name of the cosmic product
+          example: "Anti-gravity Yarn (Red)"
+        description:
+          type: string
+          description: Detailed description of the product
+          example: "Allows cats to play on the ceiling. Solar powered."
+        price:
+          type: number
+          format: double
+          description: Price in intergalactic credits
+          example: 25.50
+        stockQuantity:
+          type: integer
+          description: Quantity in stock
+          example: 150
+        originPlanet:
+          type: string
+          description: Planet of origin
+          example: "Mars"
+        category:
+          type: string
+          enum: [TOY, FOOD, EQUIPMENT, CLOTHING]
+          description: Product category
+          example: "TOY"
+
+    CreateProductDto:
+      type: object
+      required:
+        - name
+        - price
+        - category
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          description: Product name
+          example: "Cosmic Milk (Latte)"
+        description:
+          type: string
+          maxLength: 500
+          description: Product description
+        price:
+          type: number
+          format: double
+          minimum: 0.01
+          description: Price must be greater than 0
+          example: 12.99
+        stockQuantity:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Initial stock quantity
+        originPlanet:
+          type: string
+          maxLength: 50
+          default: "Earth"
+          description: Planet where the product was made
+        category:
+          type: string
+          enum: [TOY, FOOD, EQUIPMENT, CLOTHING]
+          description: Product category
+
+    UpdateProductDto:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        price:
+          type: number
+          format: double
+          minimum: 0.01
+        stockQuantity:
+          type: integer
+          minimum: 0
+        originPlanet:
+          type: string
+        category:
+          type: string
+          enum: [TOY, FOOD, EQUIPMENT, CLOTHING]
+
+    ProductListDto:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductDetailsDto'
+
+    ProblemDetail:
+      type: object
+      description: A problem detail document conforming to RFC 9457.
+      properties:
+        type:
+          type: string
+          format: uri
+          description: A URI reference that identifies the problem type.
+          example: "about:blank"
+          default: "about:blank"
+        title:
+          type: string
+          description: A short, human-readable summary of the problem type.
+          example: "Validation Error"
+        status:
+          type: integer
+          description: The HTTP status code.
+          example: 400
+        detail:
+          type: string
+          description: A human-readable explanation specific to this occurrence of the problem.
+          example: "One or more fields are invalid."
+        instance:
+          type: string
+          format: uri
+          description: A URI reference that identifies the specific occurrence of the problem.
+          example: "/api/v1/products"
+        errors:
+          type: array
+          description: List of validation errors (optional, present only for 400 Bad Request).
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+                description: The field that caused the error.
+                example: "price"
+              reason:
+                type: string
+                description: The reason why the field is invalid.
+                example: "must be greater than 0.01"
