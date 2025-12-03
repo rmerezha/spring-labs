@@ -1,6 +1,7 @@
 package com.rmerezha.dto;
 
 import com.rmerezha.domain.Category;
+import com.rmerezha.validation.CosmicWordCheck;
 import jakarta.validation.constraints.*;
 import lombok.Value;
 
@@ -11,6 +12,7 @@ public class CreateProductDto {
 
     @NotBlank(message = "Name is required")
     @Size(max = 100, message = "Name must be less than 100 characters")
+    @CosmicWordCheck
     String name;
 
     @Size(max = 500, message = "Description must be less than 500 characters")
