@@ -35,16 +35,15 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
-    finalizedBy jacocoTestReport
+test {
+    useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
 }
 
 jacocoTestReport {
-    dependsOn test
+    dependsOn(tasks.test)
     reports {
         xml.required = true
         html.required = true
