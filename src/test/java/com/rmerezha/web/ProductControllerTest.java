@@ -12,6 +12,8 @@ import com.rmerezha.service.ProductService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
@@ -20,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -138,5 +141,82 @@ class ProductControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(productService).deleteProductById(id);
+    }
+
+    @ParameterizedTest(name = "{index} -> {0}")
+    @MethodSource("invalidCreateScenarios")
+    @DisplayName("Create Validation: Should return 400 when input is invalid")
+    void testCreateProduct_ValidationFailures(String testDescription, CreateProductDto invalidDto, String errorField) throws Exception {
+        mockMvc.perform(post("/api/v1/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidDto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[?(@.field == '" + errorField + "')]").exists());
+
+        verify(productService, never()).createProduct(any());
+    }
+
+    static Stream<Object[]> invalidCreateScenarios() {
+        return Stream.of(
+                new Object[]{"Name is empty",
+                        new CreateProductDto("", "Desc", BigDecimal.TEN, 10, "Mars", Category.FOOD), "name"},
+
+                new Object[]{"Name too long",
+                        new CreateProductDto("A".repeat(101), "Desc", BigDecimal.TEN, 10, "Mars", Category.FOOD), "name"},
+
+                new Object[]{"No cosmic word in name",
+                        new CreateProductDto("Just Milk", "Desc", BigDecimal.TEN, 10, "Mars", Category.FOOD), "name"},
+
+                new Object[]{"Description too long",
+                        new CreateProductDto("Star Milk", "A".repeat(501), BigDecimal.TEN, 10, "Mars", Category.FOOD), "description"},
+
+                new Object[]{"Price is null",
+                        new CreateProductDto("Star Milk", "Desc", null, 10, "Mars", Category.FOOD), "price"},
+
+                new Object[]{"Price is zero",
+                        new CreateProductDto("Star Milk", "Desc", BigDecimal.ZERO, 10, "Mars", Category.FOOD), "price"},
+
+                new Object[]{"Stock is negative",
+                        new CreateProductDto("Star Milk", "Desc", BigDecimal.TEN, -1, "Mars", Category.FOOD), "stockQuantity"},
+
+                new Object[]{"Planet name too long",
+                        new CreateProductDto("Star Milk", "Desc", BigDecimal.TEN, 10, "A".repeat(51), Category.FOOD), "originPlanet"},
+
+                new Object[]{"Category is null",
+                        new CreateProductDto("Star Milk", "Desc", BigDecimal.TEN, 10, "Mars", null), "category"}
+        );
+    }
+
+    @ParameterizedTest(name = "{index} -> {0}")
+    @MethodSource("invalidUpdateScenarios")
+    @DisplayName("Update Validation: Should return 400 when input is invalid")
+    void testUpdateProduct_ValidationFailures(String testDescription, UpdateProductDto invalidDto, String errorField) throws Exception {
+
+        mockMvc.perform(put("/api/v1/products/{id}", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidDto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[?(@.field == '" + errorField + "')]").exists());
+
+        verify(productService, never()).updateProduct(any(), any());
+    }
+
+    static Stream<Object[]> invalidUpdateScenarios() {
+        return Stream.of(
+                new Object[]{"Name too long",
+                        new UpdateProductDto("A".repeat(101), null, null, null, null, null), "name"},
+
+                new Object[]{"Description too long",
+                        new UpdateProductDto(null, "A".repeat(501), null, null, null, null), "description"},
+
+                new Object[]{"Price negative",
+                        new UpdateProductDto(null, null, BigDecimal.valueOf(-5), null, null, null), "price"},
+
+                new Object[]{"Stock negative",
+                        new UpdateProductDto(null, null, null, -10, null, null), "stockQuantity"},
+
+                new Object[]{"Planet too long",
+                        new UpdateProductDto(null, null, null, null, "A".repeat(51), null), "originPlanet"}
+        );
     }
 }
