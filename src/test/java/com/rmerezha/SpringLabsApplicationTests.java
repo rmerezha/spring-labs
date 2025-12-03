@@ -1,4 +1,4 @@
-package com.rmerezha.spring_labs;
+package com.rmerezha;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
