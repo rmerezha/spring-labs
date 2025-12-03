@@ -45,7 +45,8 @@ public class ProductService {
         if (productChanges.getName() != null) existingProduct.setName(productChanges.getName());
         if (productChanges.getDescription() != null) existingProduct.setDescription(productChanges.getDescription());
         if (productChanges.getPrice() != null) existingProduct.setPrice(productChanges.getPrice());
-        if (productChanges.getStockQuantity() != null) existingProduct.setStockQuantity(productChanges.getStockQuantity());
+        if (productChanges.getStockQuantity() != null)
+            existingProduct.setStockQuantity(productChanges.getStockQuantity());
         if (productChanges.getOriginPlanet() != null) existingProduct.setOriginPlanet(productChanges.getOriginPlanet());
         if (productChanges.getCategory() != null) existingProduct.setCategory(productChanges.getCategory());
 

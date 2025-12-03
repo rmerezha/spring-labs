@@ -1,6 +1,6 @@
 package com.rmerezha.exception;
 
-import jakarta.servlet.http.HttpServletRequest; // ВАЖЛИВО: Імпорт для отримання URI
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -85,5 +85,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problemDetail);
     }
 
-    public record ValidationError(String field, String reason) {}
+    public record ValidationError(String field, String reason) {
+    }
 }

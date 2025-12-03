@@ -2,6 +2,7 @@ package com.rmerezha.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+
 import java.util.List;
 
 public class CosmicWordCheckValidator implements ConstraintValidator<CosmicWordCheck, String> {
