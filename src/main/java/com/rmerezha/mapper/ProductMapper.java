@@ -19,6 +19,8 @@ public interface ProductMapper {
     @Mapping(target = "id", ignore = true)
     Product toDomain(UpdateProductDto dto);
 
+    Product toDomain(ProductDetailsDto dto);
+
     ProductDetailsDto toDto(Product product);
 
     List<ProductDetailsDto> toDtoList(List<Product> products);
