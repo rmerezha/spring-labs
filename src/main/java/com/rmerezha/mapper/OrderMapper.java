@@ -9,5 +9,5 @@ public interface OrderMapper {
 
     OrderDto toDto(Order order);
 
-    Order toEntity(OrderDto orderDto);
+    Order toDomain(OrderDto orderDto);
 }

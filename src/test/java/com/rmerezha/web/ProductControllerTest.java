@@ -90,7 +90,7 @@ class ProductControllerTest {
         Product savedEntity = new Product(101L, "Star Milk", "Desc", BigDecimal.TEN, 10, "Mars", Category.FOOD);
         ProductDetailsDto responseDto = new ProductDetailsDto(101L, "Star Milk", "Desc", BigDecimal.TEN, 10, "Mars", Category.FOOD);
 
-        when(productMapper.toEntity(createDto)).thenReturn(mappedEntity);
+        when(productMapper.toDomain(createDto)).thenReturn(mappedEntity);
         when(productService.createProduct(mappedEntity)).thenReturn(savedEntity);
         when(productMapper.toDto(savedEntity)).thenReturn(responseDto);
 
@@ -102,7 +102,7 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.id").value(101))
                 .andExpect(jsonPath("$.name").value("Star Milk"));
 
-        verify(productMapper).toEntity(any(CreateProductDto.class));
+        verify(productMapper).toDomain(any(CreateProductDto.class));
         verify(productService).createProduct(any(Product.class));
     }
 
@@ -117,7 +117,7 @@ class ProductControllerTest {
         Product updatedEntity = new Product(id, "New Name", "Desc", BigDecimal.valueOf(20), 5, "Mars", Category.TOY);
         ProductDetailsDto responseDto = new ProductDetailsDto(id, "New Name", "Desc", BigDecimal.valueOf(20), 5, "Mars", Category.TOY);
 
-        when(productMapper.toEntity(updateDto)).thenReturn(changesEntity);
+        when(productMapper.toDomain(updateDto)).thenReturn(changesEntity);
         when(productService.updateProduct(eq(id), any(Product.class))).thenReturn(updatedEntity);
         when(productMapper.toDto(updatedEntity)).thenReturn(responseDto);
 

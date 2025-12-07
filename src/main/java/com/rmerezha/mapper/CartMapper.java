@@ -9,5 +9,5 @@ public interface CartMapper {
 
     CartDto toDto(Cart cart);
 
-    Cart toEntity(CartDto cartDto);
+    Cart toDomain(CartDto cartDto);
 }

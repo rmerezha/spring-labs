@@ -40,7 +40,7 @@ public class ProductController {
     public ResponseEntity<ProductDetailsDto> createProduct(
             @Valid @RequestBody CreateProductDto createProductDto
     ) {
-        Product productToCreate = productMapper.toEntity(createProductDto);
+        Product productToCreate = productMapper.toDomain(createProductDto);
 
         Product createdProduct = productService.createProduct(productToCreate);
 
@@ -59,7 +59,7 @@ public class ProductController {
             @PathVariable Long id,
             @Valid @RequestBody UpdateProductDto updateProductDto
     ) {
-        Product productChanges = productMapper.toEntity(updateProductDto);
+        Product productChanges = productMapper.toDomain(updateProductDto);
 
         Product updatedProduct = productService.updateProduct(id, productChanges);
 
