@@ -23,17 +23,9 @@ public class CartEntity {
     )
     private Long id;
 
-    // Тут може бути прив'язка до User, наприклад:
-    // @Column(name = "user_id", unique = true)
-    // private Long userId;
-
-    // Кошик теж зручно зберігати каскадом (PERSIST або ALL, бо кошик - це тимчасова штука)
-    // Тут можна використати CascadeType.ALL + orphanRemoval = true,
-    // тому що якщо ми видаляємо товар з кошика, запис CartItem має зникнути.
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItemEntity> items = new ArrayList<>();
 
-    // --- Helper Methods ---
     public void addItem(CartItemEntity item) {
         items.add(item);
         item.setCart(this);
