@@ -3,9 +3,13 @@ package com.rmerezha.service;
 import com.rmerezha.domain.Product;
 import com.rmerezha.exception.ProductAlreadyExistsException;
 import com.rmerezha.exception.ProductNotFoundException;
+import com.rmerezha.mapper.ProductMapper;
+import com.rmerezha.persistence.entity.ProductEntity;
+import com.rmerezha.persistence.mapper.ProductEntityMapper;
 import com.rmerezha.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -14,34 +18,42 @@ import java.util.List;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductEntityMapper productMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public List<Product> findAllProducts() {
-        return productRepository.findAll();
+        var entities = productRepository.findAll();
+        return productMapper.toDomainList(entities);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Product findProductById(Long id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException(id));
+        var entity = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
+        return productMapper.toDomain(entity);
     }
 
     @Override
+    @Transactional
     public Product createProduct(Product product) {
-        if (productRepository.existsByName(product.getName())) {
+        if (productRepository.existsByNameIgnoreCase(product.getName())) {
             throw new ProductAlreadyExistsException(product.getName());
         }
-        return productRepository.save(product);
+        var entity = productMapper.toEntity(product);
+        var created = productRepository.save(entity);
+        return productMapper.toDomain(created);
     }
 
     @Override
+    @Transactional
     public Product updateProduct(Long id, Product productChanges) {
         Product existingProduct = findProductById(id);
 
         if (productChanges.getName() != null &&
                 !productChanges.getName().equalsIgnoreCase(existingProduct.getName())) {
 
-            if (productRepository.existsByName(productChanges.getName())) {
+            if (productRepository.existsByNameIgnoreCase(productChanges.getName())) {
                 throw new ProductAlreadyExistsException(productChanges.getName());
             }
         }
@@ -54,10 +66,12 @@ public class ProductServiceImpl implements ProductService {
         if (productChanges.getOriginPlanet() != null) existingProduct.setOriginPlanet(productChanges.getOriginPlanet());
         if (productChanges.getCategory() != null) existingProduct.setCategory(productChanges.getCategory());
 
-        return productRepository.save(existingProduct);
+        var entity = productRepository.save(productMapper.toEntity(existingProduct));
+        return productMapper.toDomain(entity);
     }
 
     @Override
+    @Transactional
     public void deleteProductById(Long id) {
         productRepository.deleteById(id);
     }
