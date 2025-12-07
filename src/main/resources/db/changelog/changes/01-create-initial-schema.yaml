@@ -32,7 +32,6 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     primaryKey: true
-                    nullable: false
               - column:
                   name: name
                   type: varchar(255)
@@ -54,6 +53,8 @@ databaseChangeLog:
               - column:
                   name: origin_planet
                   type: varchar(255)
+                  constraints:
+                    nullable: false
               - column:
                   name: category
                   type: varchar(50)
@@ -84,12 +85,20 @@ databaseChangeLog:
               - column:
                   name: total_price
                   type: decimal(19, 2)
+                  constraints:
+                    nullable: false
               - column:
                   name: status
                   type: varchar(50)
+                  constraints:
+                    nullable: false
+                    checkConstraint: "status IN ('NEW', 'CANCELED', 'SHIPPED', 'COMPLETED')"
               - column:
                   name: created_at
                   type: timestamp
+                  defaultValueComputed: "CURRENT_TIMESTAMP"
+                  constraints:
+                    nullable: false
 
         - createTable:
             tableName: order_items

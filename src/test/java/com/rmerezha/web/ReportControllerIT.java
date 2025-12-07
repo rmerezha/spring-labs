@@ -2,6 +2,7 @@ package com.rmerezha.web;
 
 import com.rmerezha.PostgresIT;
 import com.rmerezha.domain.Category;
+import com.rmerezha.domain.OrderStatus;
 import com.rmerezha.persistence.entity.OrderEntity;
 import com.rmerezha.persistence.entity.OrderItemEntity;
 import com.rmerezha.persistence.entity.ProductEntity;
@@ -75,7 +76,7 @@ class ReportControllerIT extends PostgresIT {
         productRepository.save(product);
 
         OrderEntity order = new OrderEntity();
-        order.setStatus("COMPLETED");
+        order.setStatus(OrderStatus.COMPLETED);
         order.setCreatedAt(LocalDateTime.now());
         order.setTotalPrice(product.getPrice().multiply(BigDecimal.valueOf(quantity)));
 
