@@ -14,10 +14,12 @@ public interface ProductMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "originPlanet", source = "originPlanet", defaultValue = "Earth")
     @Mapping(target = "stockQuantity", source = "stockQuantity", defaultValue = "0")
-    Product toEntity(CreateProductDto createProductDto);
+    Product toDomain(CreateProductDto createProductDto);
 
     @Mapping(target = "id", ignore = true)
-    Product toEntity(UpdateProductDto dto);
+    Product toDomain(UpdateProductDto dto);
+
+    Product toDomain(ProductDetailsDto dto);
 
     ProductDetailsDto toDto(Product product);
 

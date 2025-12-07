@@ -7,5 +7,5 @@ import java.util.List;
 @Data
 public class Cart {
     private Long id;
-    private List<Product> products;
+    private List<CartItem> items;
 }

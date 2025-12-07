@@ -1,0 +1,188 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1700000000-1
+      author: rmerezha
+      changes:
+        - createSequence:
+            sequenceName: products_seq
+            incrementBy: 50
+            startValue: 1
+        - createSequence:
+            sequenceName: orders_seq
+            incrementBy: 50
+            startValue: 1
+        - createSequence:
+            sequenceName: order_items_seq
+            incrementBy: 50
+            startValue: 1
+        - createSequence:
+            sequenceName: carts_seq
+            incrementBy: 50
+            startValue: 1
+        - createSequence:
+            sequenceName: cart_items_seq
+            incrementBy: 50
+            startValue: 1
+
+        - createTable:
+            tableName: products
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(500)
+              - column:
+                  name: price
+                  type: decimal(19, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: stock_quantity
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: origin_planet
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    checkConstraint: "category IN ('TOY', 'FOOD', 'EQUIPMENT', 'CLOTHING')"
+
+        - addUniqueConstraint:
+            tableName: products
+            columnNames: name, category
+            constraintName: uc_product_name_category
+
+        - createIndex:
+            tableName: products
+            indexName: idx_product_name
+            columns:
+              - column:
+                  name: name
+
+        - createTable:
+            tableName: orders
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: total_price
+                  type: decimal(19, 2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    checkConstraint: "status IN ('NEW', 'CANCELED', 'SHIPPED', 'COMPLETED')"
+              - column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: "CURRENT_TIMESTAMP"
+                  constraints:
+                    nullable: false
+
+        - createTable:
+            tableName: order_items
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: quantity
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: order_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_order_items_order
+                    references: orders(id)
+              - column:
+                  name: product_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_order_items_product
+                    references: products(id)
+
+        - createTable:
+            tableName: carts
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+
+        - createTable:
+            tableName: cart_items
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: quantity
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: cart_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cart_items_cart
+                    references: carts(id)
+              - column:
+                  name: product_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_cart_items_product
+                    references: products(id)
+
+      rollback:
+        - dropTable:
+            tableName: cart_items
+        - dropTable:
+            tableName: carts
+        - dropTable:
+            tableName: order_items
+        - dropTable:
+            tableName: orders
+        - dropTable:
+            tableName: products
+        - dropSequence:
+            sequenceName: cart_items_seq
+        - dropSequence:
+            sequenceName: carts_seq
+        - dropSequence:
+            sequenceName: order_items_seq
+        - dropSequence:
+            sequenceName: orders_seq
+        - dropSequence:
+            sequenceName: products_seq

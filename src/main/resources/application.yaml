@@ -1,3 +1,7 @@
 spring:
   application:
     name: spring-labs
+  datasource:
+    url: "localhost:5432"
+    username: "prod"
+    password: "prod"

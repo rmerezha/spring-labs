@@ -1,13 +1,12 @@
 package com.rmerezha.repository;
 
-import com.rmerezha.domain.Product;
-import java.util.List;
-import java.util.Optional;
+import com.rmerezha.persistence.entity.ProductEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface ProductRepository {
-    Product save(Product product);
-    Optional<Product> findById(Long id);
-    List<Product> findAll();
-    void deleteById(Long id);
-    boolean existsByName(String name);
+@Repository
+public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
+
+    boolean existsByNameIgnoreCase(String name);
+
 }
