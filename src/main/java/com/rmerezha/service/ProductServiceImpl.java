@@ -8,6 +8,7 @@ import com.rmerezha.persistence.entity.ProductEntity;
 import com.rmerezha.persistence.mapper.ProductEntityMapper;
 import com.rmerezha.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'API')")
     public List<Product> findAllProducts() {
         var entities = productRepository.findAll();
         return productMapper.toDomainList(entities);
@@ -29,6 +31,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'API')")
     public Product findProductById(Long id) {
         var entity = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
         return productMapper.toDomain(entity);
@@ -36,6 +39,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public Product createProduct(Product product) {
         if (productRepository.existsByNameIgnoreCase(product.getName())) {
             throw new ProductAlreadyExistsException(product.getName());
@@ -47,6 +51,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public Product updateProduct(Long id, Product productChanges) {
         Product existingProduct = findProductById(id);
 
@@ -72,6 +77,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public void deleteProductById(Long id) {
         productRepository.deleteById(id);
     }

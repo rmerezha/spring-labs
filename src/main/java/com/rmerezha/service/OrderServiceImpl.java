@@ -5,6 +5,8 @@ import com.rmerezha.exception.OrderNotFoundException;
 import com.rmerezha.persistence.mapper.OrderEntityMapper;
 import com.rmerezha.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +21,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'API')")
     public List<Order> findAllOrders() {
         var entities = orderRepository.findAll();
         return orderMapper.toDomainList(entities);
@@ -26,6 +29,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'API')")
     public Order findOrderById(Long id) {
         var entity = orderRepository.findById(id)
                 .orElseThrow(() -> new OrderNotFoundException(id));
@@ -34,6 +38,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'API')")
     public Order createOrder(Order order) {
         var entity = orderMapper.toEntity(order);
         var savedEntity = orderRepository.save(entity);
@@ -42,6 +47,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public Order updateOrder(Long id, Order orderChanges) {
         Order existingOrder = findOrderById(id);
 
@@ -63,6 +69,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public void deleteOrderById(Long id) {
         if (!orderRepository.existsById(id)) {
             throw new OrderNotFoundException(id);

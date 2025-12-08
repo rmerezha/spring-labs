@@ -1,0 +1,14 @@
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/.well-known/jwks.json
+
+app:
+  security:
+    api-key:
+      secret: "dev-secret"
+      header-name: "X-API-KEY"
+      username: "DEV_USER"
+      role: "ROLE_ADMIN"

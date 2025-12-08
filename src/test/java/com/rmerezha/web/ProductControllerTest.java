@@ -8,6 +8,7 @@ import com.rmerezha.dto.ProductDetailsDto;
 import com.rmerezha.dto.ProductListDto;
 import com.rmerezha.dto.UpdateProductDto;
 import com.rmerezha.mapper.ProductMapper;
+import com.rmerezha.security.NoAuthSecurityConfig;
 import com.rmerezha.service.ProductService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -16,7 +17,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -31,6 +34,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(ProductController.class)
 @Tag("web")
+@ActiveProfiles("no-auth")
+@Import(NoAuthSecurityConfig.class)
 class ProductControllerTest {
 
     @Autowired

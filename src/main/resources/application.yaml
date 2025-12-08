@@ -5,3 +5,10 @@ spring:
     url: "localhost:5432"
     username: "prod"
     password: "prod"
+app:
+  security:
+    api-key:
+      secret: "cosmo-secret-key-123"
+    jwt:
+      secret: "secret78123456781234567812345678"
+      algorithm: "HS256"
