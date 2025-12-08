@@ -12,7 +12,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -20,6 +21,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Tag("integration")
+@ActiveProfiles("no-auth")
+@WithMockUser(username = "admin", roles = {"ADMIN"})
 class ProductServiceIT extends PostgresIT {
 
     @Autowired
